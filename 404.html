@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Hànyǔ Lab has moved</title>
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; box-sizing: border-box;
+         font: 16px/1.5 system-ui, sans-serif; background: #fffdf8; color: #2b2622; text-align: center; }
+  a { color: #b9432f; font-weight: 600; }
+  @media (prefers-color-scheme: dark) { body { background: #1d1a17; color: #f1ebe2; } a { color: #f08a6f; } }
+</style>
+<script>
+  // Hànyǔ Lab moved. Send visitors to the same page at the new address and carry their saved
+  // progress across: localStorage belongs to this origin, so only this page can still read it.
+  (function () {
+    var NEW_SITE = "https://hanyu.yourshirtisajoke.workers.dev";
+    var BASE = "/hanyu/";
+    var path = location.pathname.indexOf(BASE) === 0 ? location.pathname.slice(BASE.length) : "";
+    if (path === "index.html") path = "";
+    var target = NEW_SITE + "/" + path + location.search;
+    var hash = location.hash;
+    var importable = path === "" || path === "classic.html" || path === "classic/" || path === "classic";
+    try {
+      var data = {}, count = 0;
+      for (var i = 0; i < localStorage.length; i += 1) {
+        var key = localStorage.key(i);
+        if (/^(hy-|wh-|story-lang$)/.test(key)) { data[key] = localStorage.getItem(key); count += 1; }
+      }
+      if (importable && count) {
+        var bytes = new TextEncoder().encode(JSON.stringify(data)), binary = "";
+        for (var j = 0; j < bytes.length; j += 1) binary += String.fromCharCode(bytes[j]);
+        var payload = btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+        if (payload.length < 1500000) hash = "#import=" + payload + (hash ? "&next=" + encodeURIComponent(hash) : "");
+      }
+    } catch (error) { /* storage blocked: just redirect */ }
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("go").href = NEW_SITE + "/";
+    });
+    location.replace(target + hash);
+  })();
+</script>
+</head>
+<body>
+<main>
+  <h1>Hànyǔ Lab has moved</h1>
+  <p>Taking you to the new address… <a id="go" href="https://hanyu.yourshirtisajoke.workers.dev/">Open Hànyǔ Lab</a></p>
+</main>
+</body>
+</html>
